@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Resume Analyzer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="background"></div>
+
+  <div class="card">
+    <h1>🤖 AI Resume Analyzer</h1>
+    <p class="subtitle">Analyze your resume and check how well it matches your desired job role!</p>
+
+    <form action="/upload" method="post" enctype="multipart/form-data" class="form">
+      <label for="job_role">🎯 Choose Job Role</label>
+      <select name="job_role" id="job_role" required>
+        <option value="">-- Select Job Role --</option>
+        {% for job in job_roles %}
+        <option value="{{ job }}">{{ job }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="resume">📄 Upload Resume (PDF)</label>
+      <input type="file" id="resume" name="resume" accept=".pdf" required>
+
+      <button type="submit" class="analyze-btn">🚀 Analyze Resume</button>
+    </form>
+
+    {% if result_data %}
+    <div class="result">
+      <h2>Analysis for: <span>{{ result_data.job_role }}</span></h2>
+      <p><strong>File:</strong> {{ result_data.filename }}</p>
+      <p><strong>Word Count:</strong> {{ result_data.word_count }}</p>
+
+      <div class="grid">
+        <div class="box">
+          <h3>🧠 Extracted Skills</h3>
+          {% if result_data.extracted_skills %}
+            <ul>{% for s in result_data.extracted_skills %}<li>{{ s }}</li>{% endfor %}</ul>
+          {% else %}
+            <p>None found</p>
+          {% endif %}
+        </div>
+
+        <div class="box">
+          <h3>🏅 Certificates</h3>
+          {% if result_data.certificates %}
+            <ul>{% for c in result_data.certificates %}<li>{{ c }}</li>{% endfor %}</ul>
+          {% else %}
+            <p>None found</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="box">
+          <h3>✅ Matched Skills</h3>
+          {% if result_data.matched_skills %}
+            <ul>{% for m in result_data.matched_skills %}<li>{{ m }}</li>{% endfor %}</ul>
+          {% else %}
+            <p>None</p>
+          {% endif %}
+        </div>
+
+        <div class="box">
+          <h3>❌ Missing Skills</h3>
+          {% if result_data.missing_skills %}
+            <ul>{% for ms in result_data.missing_skills %}<li>{{ ms }}</li>{% endfor %}</ul>
+          {% else %}
+            <p>None</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="score-box">
+        <h3>📊 Selection Probability</h3>
+        <div class="bar">
+          <div class="fill" style="width:{{ result_data.score }}%"></div>
+
+        <p class="percent">{{ result_data.score }}%</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <footer class="note">
+      <p>💡 Tip: Add a <b>“Skills”</b> section and mention certificates clearly for better accuracy!</p>
+    </footer>
+  </div>
+</body>
+</html>
